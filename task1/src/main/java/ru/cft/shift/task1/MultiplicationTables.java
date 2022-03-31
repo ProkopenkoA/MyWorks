@@ -1,6 +1,10 @@
 package ru.cft.shift.task1;
 
+import java.io.PrintWriter;
+
 public class MultiplicationTables {
+    private static final int maxDigitsOfNumber = 19;
+    private static final char separator = '|';
     Integer size;
     Integer indent;//отступ, кол-во разрядов в числе
     Integer indentMaxIndex;
@@ -12,71 +16,68 @@ public class MultiplicationTables {
     }
 
     static int digitsOfNumber(long num) {
-        long x = 10;
-        for (int i=1; i<19; i++) {
-            if (num < x)
-                return i;
-            x = 10*x;
+        long minNumberOfDigit = 10;
+        for (int digit = 1; digit < maxDigitsOfNumber; digit++) {
+            if (num < minNumberOfDigit)
+                return digit;
+            minNumberOfDigit = minNumberOfDigit * 10;
         }
-        return 19;
+        return maxDigitsOfNumber;
     }
 
-    private void printLineTable(){
-        System.out.print("\n");
+    private String printLineTable(){
+        StringBuilder lineTable;
 
-        for(int i = indentMaxIndex; i!=0; i--){
-            System.out.print("-");
-        }
-        System.out.print("+");
+        lineTable = new StringBuilder("\n");
+        lineTable.append("-".repeat(Math.max(0, indentMaxIndex)));
 
         for(int index = size; index > 0; index--){
-            for(int rank = indent; rank > 0; rank--){
-                System.out.print("-");
-            }
-            System.out.print("+");
+            lineTable.append("+");
+            lineTable.append("-".repeat(Math.max(0, indent)));
         }
-        System.out.print("\n");
+        return lineTable.toString();
     }
 
-    private void printFirstNumber(long number){
+    private void printFirstNumber(long number, PrintWriter pw){
         for (int numIndent = digitsOfNumber(number); numIndent != indentMaxIndex; numIndent++){
-            System.out.print(" ");
+            pw.print(" ");
         }
-        System.out.print(number + "|");
+        pw.print(number);
     }
 
-    private void printFirstLine(){
+    private void printFirstLine(PrintWriter pw){
         for(int i = indentMaxIndex; i!=0; i--){
-            System.out.print(" ");
+            pw.print(" ");
         }
-        System.out.print("|");
 
         int numIndent;
         for(int index = 1; index <= size; index++){
+            pw.print(separator);
             for(numIndent = indent - digitsOfNumber(index); numIndent != 0; numIndent --){
-                System.out.print(" ");
+                pw.print(" ");
             }
-            System.out.print(index + "|");
+            pw.print(index);
         }
-        printLineTable();
     }
 
-    public void printTable(){
-        printFirstLine();
-
+    public void printTable(PrintWriter pw){
+        printFirstLine(pw);
+        String lineTable = printLineTable();
         long number;
         int numIndent;
+        pw.println(lineTable);
 
          for(long index1 = 1; index1 <= size; index1++){
-             printFirstNumber(index1);
+             printFirstNumber(index1, pw);
              for(long index2 = 1; index2 <= size; index2++){
+                 pw.print(separator);
                  number = index1*index2;
                  for(numIndent = indent - digitsOfNumber(number); numIndent != 0; numIndent --){
-                     System.out.print(" ");
+                     pw.print(" ");
                  }
-                 System.out.print(number + "|");
+                 pw.print(number);
              }
-             printLineTable();
+             pw.println(lineTable);
          }
     }
 }
