@@ -6,6 +6,7 @@ public class MultiplicationTables {
     private static final int MAX_DIGITS_OF_NUMBER = 19;
     private static final char SEPARATOR_VERTICAL = '|';
     private static final char SEPARATOR_OF_HORIZONTAL = '+';
+    private static final char SEPARATOR_SPACE = ' ';
     private static final String SEPARATOR_HORIZONTAL = "-";
     int size;
     int indent;
@@ -41,21 +42,21 @@ public class MultiplicationTables {
 
     private void printFirstNumber(long number, PrintWriter pw) {
         for (int numIndent = digitsOfNumber(number); numIndent != indentMaxIndex; numIndent++) {
-            pw.print(" ");
+            pw.print(SEPARATOR_SPACE);
         }
         pw.print(number);
     }
 
     private void printFirstLine(PrintWriter pw) {
         for (int i = indentMaxIndex; i != 0; i--) {
-            pw.print(" ");
+            pw.print(SEPARATOR_SPACE);
         }
 
         int numIndent;
         for (int index = 1; index <= size; index++) {
             pw.print(SEPARATOR_VERTICAL);
             for (numIndent = indent - digitsOfNumber(index); numIndent != 0; numIndent--) {
-                pw.print(" ");
+                pw.print(SEPARATOR_SPACE);
             }
             pw.print(index);
         }
@@ -74,7 +75,7 @@ public class MultiplicationTables {
                 pw.print(SEPARATOR_VERTICAL);
                 number = rowIndex * cellIndex;
                 for (numIndent = indent - digitsOfNumber(number); numIndent != 0; numIndent--) {
-                    pw.print(" ");
+                    pw.print(SEPARATOR_SPACE);
                 }
                 pw.print(number);
             }

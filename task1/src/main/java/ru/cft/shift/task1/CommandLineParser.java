@@ -1,7 +1,10 @@
 package ru.cft.shift.task1;
 
 public class CommandLineParser {
+    private static final char ARGUMENT_PREFIX = '-';
+    private static final String ARGUMENT_NAME_SIZE_TABLE = "sizeTable";
     int sizeTable;
+
 
     public CommandLineParser() {
     }
@@ -15,13 +18,13 @@ public class CommandLineParser {
             System.out.println("Ошибка ввода входных данных: задано неверное кол-во параметров");
             return false;
         }
-        if (args[0].charAt(0) == '-') {
+        if (args[0].charAt(0) == ARGUMENT_PREFIX) {
             args[0] = args[0].substring(1);
         } else {
             System.out.println("Ошибка ввода входных данных: параметр начинается не с '-'");
             return false;
         }
-        if (args[0].equals("sizeTable")) {
+        if (args[0].equals(ARGUMENT_NAME_SIZE_TABLE)) {
             try {
                 this.sizeTable = Integer.parseInt(args[1]);
             } catch (NumberFormatException e) {
