@@ -6,27 +6,36 @@ public class Rectangle extends Figure {
 
     private static final Logger log = Logger.getLogger(Main.class.getName());
 
-    double diagonal;
-    double length;
-    double width;
+    private final double diagonal;
+    private final double length;
+    private final double width;
 
     public Rectangle(double length, double width) {
 
-        log.fine("Создан Rectangle");
-
-        this.length = length;
-        this.width = width;
+        this.length = Math.max(length, width);
+        this.width = Math.min(length, width);
         this.diagonal = Math.sqrt(length * length + width * width);
+        calculateArea();
+        calculatePerimeter();
+        log.fine("Создан Rectangle");
+    }
+
+    @Override
+    public void calculateArea() {
         super.area = length * width;
+    }
+
+    @Override
+    public void calculatePerimeter() {
         super.perimeter = length + length + width + width;
     }
 
-    public String forPrint() {
+    @Override
+    public String forPrint(String unitOfMeasure) {
         return "Тип фигуры: Прямоугольник" + "\n" +
-                "Площадь: " + area + "\n" +
-                "Периметр: " + perimeter + "\n" +
-                "Длина: " + length + "\n" +
-                "Ширина: " + width + "\n" +
-                "Диагональ: " + diagonal;
+                super.forPrint(unitOfMeasure) +
+                "Длина: " + length + " " + unitOfMeasure + "\n" +
+                "Ширина: " + width + " " + unitOfMeasure + "\n" +
+                "Диагональ: " + diagonal + " " + unitOfMeasure;
     }
 }

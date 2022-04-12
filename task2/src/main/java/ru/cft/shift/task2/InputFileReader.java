@@ -4,88 +4,51 @@ import java.io.FileReader;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
+import static ru.cft.shift.task2.Main.typeFigure;
+import static ru.cft.shift.task2.Main.segment;
+import static ru.cft.shift.task2.Main.unitOfMeasure;
+
 public class InputFileReader {
-    double[] segment = new double[3];
-    char type = 0;
-
     private static final Logger log = Logger.getLogger(Main.class.getName());
+    private final String fileName;
 
-    public InputFileReader(String fileName) throws Exception {
+
+    public InputFileReader(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void checkFileInput() throws Exception {
         try (FileReader fr = new FileReader(fileName)) {
             Scanner scanner = new Scanner(fr);
-            String argument;
             if (scanner.hasNext()) {
-                argument = scanner.next();
-                if (argument.equals("CIRCLE")) {
-                    type = 'c';
-                }
-                if (argument.equals("RECTANGLE")) {
-                    type = 'r';
-                }
-                if (argument.equals("TRIANGLE")) {
-                    type = 't';
-                }
-                if (type == 0) {
-                    throw new MyException("Ошибка в текстовом файле: первый аргумент - тип фигуры задан не верно");
-                }
-                if (type == 'c') {
-                    if (scanner.hasNextDouble()) {
-                        segment[0] = scanner.nextDouble();
-                    } else {
-                        throw new MyException("Ошибка в текстовом файле: второй аргумент - радиус круга, задан не верно");
-                    }
-                }
-                if (type == 'r') {
-                    for (int index = 0; index < 2; index++) {
-                        if (scanner.hasNextDouble()) {
-                            segment[index] = scanner.nextDouble();
-                        } else {
-                            throw new MyException("Ошибка в текстовом файле: аргумент - сторона квадрата, задан не верно");
+                typeFigure = TypeFigure.valueOf(scanner.next());
+                switch (typeFigure) {
+                    case CIRCLE -> nextSegment(scanner, 0);
+                    case RECTANGLE -> {
+                        for (int index = 0; index < 4; index = index + 2) {
+                            nextSegment(scanner, index);
                         }
                     }
-                    if (segment[1] > segment[0]) {
-                        segment[0] = segment[1] + segment[0];
-                        segment[1] = segment[0] - segment[1];
-                        segment[0] = segment[0] - segment[1];
-
-                    }
-                }
-                if (type == 't') {
-                    for (int index = 0; index < 3; index++) {
-                        if (scanner.hasNextDouble()) {
-                            segment[index] = scanner.nextDouble();
-                        } else {
-                            throw new MyException("Ошибка в текстовом файле: аргумент - сторона треугольника, задан не верно");
+                    case TRIANGLE -> {
+                        for (int index = 0; index < 6; index = index + 2) {
+                            nextSegment(scanner, index);
                         }
-                    }
-                    if (triangleRule(segment)) {
-                        throw new MyException("Ошибка в текстовом файле: правило треугольника для задданных трех сторон не выполняется");
+                        if (hasNotTriangleRule(segment)) {
+                            throw new MyException("Ошибка в текстовом файле: правило треугольника для задданных трех сторон не выполняется");
+                        }
                     }
                 }
             }
-            if (type == 0) {
+            if (typeFigure == null) {
                 throw new MyException("Ошибка: текстовый файл пуст");
             }
             if (scanner.hasNext()) {
                 log.warning("В текстовом файле аргументов больше, чем требуется");
-
             }
-        } catch (MyException e) {
-            throw new MyException(e.getMessage());
-        } catch (Exception e){
-            throw new Exception(e);
         }
     }
 
-    public double[] getSegment() {
-        return segment;
-    }
-
-    public char getType() {
-        return type;
-    }
-
-    private static boolean triangleRule(double[] side) {
+    private static boolean hasNotTriangleRule(double[] side) {
         if (side[0] + side[1] <= side[2]) {
             return true;
         }
@@ -96,5 +59,32 @@ public class InputFileReader {
             return true;
         }
         return false;
+    }
+
+    private void nextSegment(Scanner scanner, int index) throws MyException {
+        if (scanner.hasNextDouble()) {
+            segment[index / 2] = scanner.nextDouble();
+            if (segment[index / 2] > 0) {
+                nextUnitMeasure(scanner);
+                return;
+            }
+        }
+        throw new MyException("Ошибка в текстовом файле: аргумент задан не верно");
+    }
+
+    private void nextUnitMeasure(Scanner scanner) throws MyException {
+        String text;
+        if (scanner.hasNext()) {
+            text = scanner.next();
+            if (unitOfMeasure == null) {
+                unitOfMeasure = UnitOfMeasure.findByText(text);
+                if (unitOfMeasure == null) {
+                    throw new MyException("Ошибка ввода единиц измерения: " + text + " - нет совпадений");
+                }
+            }
+            if (unitOfMeasure != UnitOfMeasure.findByText(text)) {
+                throw new MyException("Ошибка ввода единиц измерения");
+            }
+        }
     }
 }

@@ -6,22 +6,32 @@ public class Circle extends Figure {
 
     private static final Logger log = Logger.getLogger(Main.class.getName());
 
-    double radius;
-    double diameter;
+    private final double radius;
+    private final double diameter;
 
     public Circle(double radius) {
-        log.fine("Создан Circle");
         this.radius = radius;
         this.diameter = radius + radius;
+        calculateArea();
+        calculatePerimeter();
+        log.fine("Создан Circle");
+    }
+
+    @Override
+    public void calculateArea() {
         super.area = radius * radius * Math.PI;
+    }
+
+    @Override
+    public void calculatePerimeter() {
         super.perimeter = 2 * radius * Math.PI;
     }
 
-    public String forPrint() {
+    @Override
+    public String forPrint(String unitOfMeasure) {
         return "Тип фигуры: Круг" + "\n" +
-                "Площадь: " + area + "\n" +
-                "Периметр: " + perimeter + "\n" +
-                "Радиус: " + radius + "\n" +
-                "Диаметр: " + diameter;
+                super.forPrint(unitOfMeasure) +
+                "Радиус: " + radius + " " + unitOfMeasure + "\n" +
+                "Диаметр: " + diameter + " " + unitOfMeasure;
     }
 }

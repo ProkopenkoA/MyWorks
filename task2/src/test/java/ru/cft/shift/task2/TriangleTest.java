@@ -4,33 +4,30 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class TriangleTest {
-    private Triangle triangle = new Triangle(5, 12, 13);
-
-    @Test
-    void triangle_rightSides() {
-        Assertions.assertEquals(5, triangle.side1);
-        Assertions.assertEquals(12, triangle.side2);
-        Assertions.assertEquals(13, triangle.side3);
-    }
+    private final Triangle triangle = new Triangle(5, 12, 13);
 
     @Test
     void triangle_rightPerimeter() {
-        Assertions.assertEquals(30, triangle.perimeter);
-    }
-    @Test
-    void triangle_rightArea() {
-        Assertions.assertEquals(30, triangle.area);
-    }
-    @Test
-    void triangle_rightAngle() {
-        Assertions.assertEquals(90, triangle.angle3);
+        Assertions.assertEquals(30, triangle.perimeter, 0.001);
     }
 
     @Test
-    void triangle_rightAngles() {
-        triangle = new Triangle(1,1,1);
-        for (double v : new double[]{triangle.angle1, triangle.angle2, triangle.angle3}) {
-            Assertions.assertEquals(60, Math.round(v));
-        }
+    void triangle_rightArea() {
+        Assertions.assertEquals(30, triangle.area, 0.001);
+    }
+
+    @Test
+    void triangle_rightForPrint() {
+        String str = """
+                Тип фигуры: Треугольник
+                Площадь: 30.0 м^2
+                Периметр: 30.0 м
+                Сторона 1: 5.0 м
+                Угол 1: 22.619864948040433°
+                Сторона 2: 12.0 м
+                Угол 2: 67.38013505195957°
+                Сторона 3: 13.0 м
+                Угол 3: 90.0°""";
+        Assertions.assertEquals(str, triangle.forPrint("м"));
     }
 }

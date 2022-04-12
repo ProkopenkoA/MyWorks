@@ -1,40 +1,50 @@
 package ru.cft.shift.task2;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class Main {
+    public static OutPut outPut;
+    public static String outPutFileName;
+    public static TypeFigure typeFigure;
+    public static double[] segment = new double[3];
+    public static UnitOfMeasure unitOfMeasure;
 
     private static final Logger log = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
         log.info("Запуск программы");
-        PrintWriter pw = new PrintWriter(System.out);
+        ArgumentParser argParser = new ArgumentParser(args);
         Figure figure = null;
+        PrintWriter pw = null;
         try {
-            TryArguments tryArgs = new TryArguments(args);
+            argParser.checkArgument();
             log.info("Проверил валидность аргументов");
-
-            switch (tryArgs.getType()) {
-                case 'c' -> figure = new Circle(tryArgs.getSegment()[0]);
-                case 'r' -> figure = new Rectangle(tryArgs.getSegment()[0], tryArgs.getSegment()[1]);
-                case 't' -> figure = new Triangle(tryArgs.getSegment()[0], tryArgs.getSegment()[1], tryArgs.getSegment()[2]);
+            switch (typeFigure) {
+                case CIRCLE -> figure = new Circle(segment[0]);
+                case RECTANGLE -> figure = new Rectangle(segment[0], segment[1]);
+                case TRIANGLE -> figure = new Triangle(segment[0], segment[1], segment[2]);
             }
             log.info("Провел рассчеты");
-            switch (tryArgs.getOutput()) {
-                case 'c' -> pw = new PrintWriter(System.out, true);
-                case 'f' -> pw = new PrintWriter(tryArgs.getOutPutFileName());
+            switch (outPut) {
+                case CONSOLE -> pw = new PrintWriter(System.out, true);
+                case FILE -> pw = new PrintWriter(outPutFileName);
             }
             if (figure != null) {
-                pw.print(figure.forPrint());
+                pw.printf(figure.forPrint(unitOfMeasure.getMeasure()));
             }
             log.info("Распечатал значение");
+        } catch (IOException e) {
+            log.log(Level.SEVERE, "Ошибка тестового файла:", e);
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Exception: ", e);
+            log.log(Level.SEVERE, "Ошибка: ", e);
         } finally {
-            pw.close();
+            if (pw != null && outPut != OutPut.CONSOLE) {
+                pw.close();
+            }
             log.info("Завершил программу");
         }
     }

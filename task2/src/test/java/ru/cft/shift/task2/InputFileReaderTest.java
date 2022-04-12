@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class InputFileReaderTest {
     private static File tmp;
@@ -20,14 +21,14 @@ public class InputFileReaderTest {
 
     @Test
     void InputFileReader_ExceptionNotRightType() {
-        Exception exception = Assertions.assertThrows(MyException.class, () -> {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(tmp.getAbsolutePath()))) {
                 bw.write("Circle" + "\n" +
-                        "5");
+                        "5 м");
             }
             InputFileReader inFile = new InputFileReader(tmp.getAbsolutePath());
+            inFile.checkFileInput();
         });
-        assertTrue(exception.getMessage().contains("Ошибка в текстовом файле: первый аргумент - тип фигуры задан не верно"));
     }
 
     @Test
@@ -35,41 +36,37 @@ public class InputFileReaderTest {
         Exception exception = Assertions.assertThrows(MyException.class, () -> {
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(tmp.getAbsolutePath()))) {
                 bw.write("RECTANGLE" + "\n" +
-                        "5 one");
+                        "5 м one");
             }
             InputFileReader inFile = new InputFileReader(tmp.getAbsolutePath());
+            inFile.checkFileInput();
         });
-        assertTrue(exception.getMessage().contains("Ошибка в текстовом файле: аргумент - сторона квадрата, задан не верно"));
+        assertTrue(exception.getMessage().contains("Ошибка в текстовом файле: аргумент задан не верно"));
     }
+
     @Test
     void InputFileReader_ExceptionRuleTriangle() {
         Exception exception = Assertions.assertThrows(MyException.class, () -> {
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(tmp.getAbsolutePath()))) {
                 bw.write("TRIANGLE" + "\n" +
-                        "1 1 3");
+                        "1 м 1 м 3 м");
             }
             InputFileReader inFile = new InputFileReader(tmp.getAbsolutePath());
+            inFile.checkFileInput();
         });
         assertTrue(exception.getMessage().contains("Ошибка в текстовом файле: правило треугольника для задданных трех сторон не выполняется"));
     }
+
     @Test
-    void InputFileReader_ExceptionFileEmpty() {
-        Exception exception = Assertions.assertThrows(MyException.class, () -> {
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(tmp.getAbsolutePath()))) {
-                bw.write("");
-            }
-            InputFileReader inFile = new InputFileReader(tmp.getAbsolutePath());
-        });
-        assertTrue(exception.getMessage().contains("Ошибка: текстовый файл пуст"));
-    }
-    @Test
-    void InputFileReader_RightPositionRectangleSides() throws Exception {
+    void InputFileReader_NoException() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(tmp.getAbsolutePath()))) {
             bw.write("RECTANGLE" + "\n" +
-                    "3 5");
+                    "1 м 3 м");
+            InputFileReader inFile = new InputFileReader(tmp.getAbsolutePath());
+            inFile.checkFileInput();
+        } catch (Exception e) {
+            fail("Ошибок не должно быть");
         }
-        InputFileReader inFile = new InputFileReader(tmp.getAbsolutePath());
-        Assertions.assertTrue(inFile.getSegment()[0] > inFile.getSegment()[1]);
     }
 
     @AfterAll
