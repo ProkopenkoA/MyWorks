@@ -8,12 +8,12 @@ public class CircleTest {
 
     @Test
     void circle_rightArea() {
-        Assertions.assertEquals(Math.PI, circle.area, 0.001);
+        Assertions.assertEquals(Math.PI, circle.calculateArea(), 0.001);
     }
 
     @Test
     void circle_rightPerimeter() {
-        Assertions.assertEquals(2 * Math.PI, circle.perimeter, 0.001);
+        Assertions.assertEquals(2 * Math.PI, circle.calculatePerimeter(), 0.001);
     }
 
     @Test

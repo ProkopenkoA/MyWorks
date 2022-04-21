@@ -8,12 +8,12 @@ public class TriangleTest {
 
     @Test
     void triangle_rightPerimeter() {
-        Assertions.assertEquals(30, triangle.perimeter, 0.001);
+        Assertions.assertEquals(30, triangle.calculatePerimeter(), 0.001);
     }
 
     @Test
     void triangle_rightArea() {
-        Assertions.assertEquals(30, triangle.area, 0.001);
+        Assertions.assertEquals(30, triangle.calculateArea(), 0.001);
     }
 
     @Test

@@ -58,14 +58,12 @@ public class InputFileReaderTest {
     }
 
     @Test
-    void InputFileReader_NoException() {
+    void InputFileReader_NoException() throws Exception {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(tmp.getAbsolutePath()))) {
             bw.write("RECTANGLE" + "\n" +
                     "1 м 3 м");
             InputFileReader inFile = new InputFileReader(tmp.getAbsolutePath());
             inFile.checkFileInput();
-        } catch (Exception e) {
-            fail("Ошибок не должно быть");
         }
     }
 

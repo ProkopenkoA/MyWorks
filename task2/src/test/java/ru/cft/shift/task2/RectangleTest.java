@@ -8,12 +8,12 @@ public class RectangleTest {
 
     @Test
     void rectangle_rightArea() {
-        Assertions.assertEquals(12, rectangle.area, 0.001);
+        Assertions.assertEquals(12, rectangle.calculateArea(), 0.001);
     }
 
     @Test
     void rectangle_rightPerimeter() {
-        Assertions.assertEquals(14, rectangle.perimeter, 0.001);
+        Assertions.assertEquals(14, rectangle.calculatePerimeter(), 0.001);
     }
 
     @Test

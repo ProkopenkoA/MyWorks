@@ -46,7 +46,7 @@ public class ArgumentParserTest {
     }
 
     @Test
-    void argumentParser_NotThrowException() {
+    void argumentParser_NotThrowException() throws Exception {
         File tmp = null;
         try {
             tmp = Files.createTempFile("inputFile", null).toFile();
@@ -58,8 +58,6 @@ public class ArgumentParserTest {
             String[] args = new String[]{"-c", "-i", finalTmp.getAbsolutePath()};
             argParser = new ArgumentParser(args);
             argParser.checkArgument();
-        } catch (Exception e) {
-            fail("Ошибок не должно быть");
         } finally {
             if (tmp != null) {
                 tmp.deleteOnExit();
