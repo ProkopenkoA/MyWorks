@@ -36,9 +36,18 @@ public class Application {
         winWindow.setNewGameListener(e -> controller.newGame());
         mainWindow.setSettingsMenuAction(e -> settingsWindow.setVisible(true));
         mainWindow.setHighScoresMenuAction(e -> highScoresWindow.setVisible(true));
-        mainWindow.setExitMenuAction(e -> mainWindow.dispose());
-        loseWindow.setExitListener(e -> mainWindow.dispose());
-        winWindow.setExitListener(e -> mainWindow.dispose());
+        mainWindow.setExitMenuAction(e -> {
+            mainWindow.dispose();
+            secondMeter.stopSecondMeter();
+        });
+        loseWindow.setExitListener(e -> {
+            mainWindow.dispose();
+            secondMeter.stopSecondMeter();
+        });
+        winWindow.setExitListener(e -> {
+            mainWindow.dispose();
+            secondMeter.stopSecondMeter();
+        });
         mainWindow.setCellListener(controller::onMouseClick);
 
         mainWindow.setVisible(true);
