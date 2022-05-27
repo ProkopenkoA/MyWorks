@@ -12,12 +12,12 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class Main {
-    private static final Logger log = LoggerFactory.getLogger(Main.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
 
         Properties properties = new Properties();
-        try (FileInputStream fis = new FileInputStream("task5/src/main/resources/config.properties")) {
+        try (FileInputStream fis = new FileInputStream(ClassLoader.getSystemResource("config.properties").getPath())) {
             properties.load(fis);
 
             StorageItem storageItem = new StorageItem(Integer.parseInt(properties.getProperty("storageSize")));

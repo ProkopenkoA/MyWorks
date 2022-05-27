@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ConsumerItem implements Runnable {
-    private static final Logger log = LoggerFactory.getLogger(ConsumerItem.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(ConsumerItem.class);
 
     private final StorageItem storageItem;
     private final int consumerTime;

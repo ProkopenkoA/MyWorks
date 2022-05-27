@@ -4,67 +4,50 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.cft.shift.task5.item.Item;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
 
 public class StorageItem {
-    private static final Logger log = LoggerFactory.getLogger(StorageItem.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(StorageItem.class);
 
-
-    private List<Item> store;
-    private static final int MIN_ITEM_IN_STORAGE = 0;
-
+    private ArrayDeque<Item> store;
     private final int maxItemInStorage;
-    private int itemCounter = 0;
-    private int itemNumber = 1;
-
 
     public StorageItem(int sizeStorage) {
         maxItemInStorage = sizeStorage;
-        store = new ArrayList<>();
+        store = new ArrayDeque<Item>(sizeStorage);
     }
 
     public synchronized void add(Item element) {
-
-        try {
-            if (itemCounter < maxItemInStorage) {
-                element.setNumber(itemNumber);
-                store.add(element);
-                log.info(Thread.currentThread().getName() + " Item №" + element.getNumber() + " Произведено");
-                itemCounter++;
-                itemNumber++;
-                log.info("Ресурсов на складе - " + itemCounter);
-                notifyAll();
-            } else {
-                log.info(Thread.currentThread().getName() + " В режиме ожидания");
+        while (store.size() >= maxItemInStorage) {
+            log.info(Thread.currentThread().getName() + " В режиме ожидания");
+            try {
                 wait();
-                log.info(Thread.currentThread().getName() + " Продолжает работу");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.info(Thread.currentThread().getName() + " Продолжает работу");
         }
+        store.addLast(element);
+        log.info(Thread.currentThread().getName() + " Item №" + element.getNumber() + " Произведено");
+        log.info("Ресурсов на складе - " + store.size());
+        notify();
     }
 
     public synchronized Item get() {
-        try {
-            if (itemCounter > MIN_ITEM_IN_STORAGE) {
-                for (Item item : store) {
-                    itemCounter--;
-                    log.info(Thread.currentThread().getName() + " Item №" + item.getNumber() + " Потреблено");
-                    store.remove(item);
-                    log.info("Ресурсов на складе - " + itemCounter);
-                    notifyAll();
-                    return item;
-                }
-            } else {
-                log.info(Thread.currentThread().getName() + " В режиме ожидания");
+        while (store.size() <= 0) {
+            log.info(Thread.currentThread().getName() + " В режиме ожидания");
+            try {
                 wait();
-                log.info(Thread.currentThread().getName() + " Продолжает работу");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.info(Thread.currentThread().getName() + " Продолжает работу");
         }
-        return null;
+        Item item;
+        item = store.removeFirst();
+        log.info(Thread.currentThread().getName() + " Item №" + item.getNumber() + " Потреблено");
+        log.info("Ресурсов на складе - " + store.size());
+        notify();
+        return item;
     }
 }

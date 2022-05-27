@@ -1,10 +1,12 @@
 package ru.cft.shift.task5.item;
 
 public class Item {
-    int  number;
+    private final int  number;
+    private static int count = 0;
 
-    public void setNumber(int number) {
-        this.number = number;
+    public Item() {
+        count++;
+        number = count;
     }
 
     public int getNumber() {

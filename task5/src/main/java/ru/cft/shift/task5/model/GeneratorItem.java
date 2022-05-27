@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.cft.shift.task5.item.Item;
 
 public class GeneratorItem implements Runnable {
-    private static final Logger log = LoggerFactory.getLogger(GeneratorItem.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(GeneratorItem.class);
 
     private final StorageItem storageItem;
     private final int producerTime;

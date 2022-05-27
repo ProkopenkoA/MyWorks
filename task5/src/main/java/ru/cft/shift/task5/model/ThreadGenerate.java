@@ -29,10 +29,4 @@ public class ThreadGenerate {
             threads.add(thread);
         }
     }
-
-    public void threadsShutDown() {
-        for (Thread thread:threads) {
-            thread.interrupt();
-        }
-    }
 }
