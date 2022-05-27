@@ -1,6 +1,6 @@
-package ru.cft.shift.task3.model;
+package ru.cft.shift.task3.model.secondmeter;
 
-public class MyThread extends Thread {
+public class SecondsCycle extends Thread {
 
     SecondListener secondListener;
     int secondTime = 0;
@@ -9,11 +9,11 @@ public class MyThread extends Thread {
         return secondTime;
     }
 
-    public MyThread(SecondListener secondListener) {
+    public SecondsCycle(SecondListener secondListener) {
         this.secondListener = secondListener;
     }
 
-    public MyThread() {
+    public SecondsCycle() {
     }
 
     @Override

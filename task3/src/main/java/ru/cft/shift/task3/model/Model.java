@@ -1,18 +1,19 @@
 package ru.cft.shift.task3.model;
 
 import ru.cft.shift.task3.dto.GameType;
+import ru.cft.shift.task3.model.secondmeter.SecondMeterInterface;
 
 import java.awt.*;
 import java.util.Random;
 
-public class Model {
+public class Model implements ModelInterface {
 
     FieldListener fieldListener;
     LoseGameListener loseGameListener;
     WinGameListener winGameListener;
-    ChangeSecondMeterListener secondMeter;
+    SecondMeterInterface secondMeter;
 
-    Field[][] field;
+    Cell[][] field;
     private static int fieldLength = 9;
     private static int fieldWidth = 9;
     private static int numberOfMine;
@@ -35,12 +36,14 @@ public class Model {
         fieldLength = columnSize;
         fieldWidth = rowSize;
         Model.numberOfMine = numberOfMine;
-        field = new Field[fieldLength][fieldWidth];
+        numberOfFlag = 0;
+        field = new Cell[fieldLength][fieldWidth];
         createMineField();
         fieldListener.createNewGameField(rowSize, columnSize, numberOfMine);
     }
 
     public void refreshMineField() {
+        numberOfFlag = 0;
         createMineField();
         fieldListener.createNewGameField(fieldWidth, fieldLength, numberOfMine);
     }
@@ -52,48 +55,48 @@ public class Model {
         secondMeter.newStartSecondMeter();
     }
 
-    public void createMineField() {
+    private void createMineField() {
         for (int rowIndex = 0; rowIndex < fieldLength; rowIndex++) {
             for (int columnIndex = 0; columnIndex < fieldWidth; columnIndex++) {
-                field[rowIndex][columnIndex] = new Field();
-                field[rowIndex][columnIndex].setFieldContent(" ");
+                field[rowIndex][columnIndex] = new Cell();
+                field[rowIndex][columnIndex].setCellContent(" ");
             }
         }
     }
 
-    public void createMine(int num, int startX, int startY) {
+    private void createMine(int num, int startX, int startY) {
         Random r = new Random();
         while (num > 0) {
             int x = r.nextInt(fieldLength);
             int y = r.nextInt(fieldWidth);
             if (!field[x][y].getContent().equals("*") && !(x == startX && y == startY)) {
-                field[x][y].setFieldContent("*");
+                field[x][y].setCellContent("*");
                 num--;
             }
         }
     }
 
-    public Point[] getFieldAround(int x, int y) {
-        Point[] field = new Point[8];
-        field[0] = new Point(x, y - 1);
-        field[1] = new Point(x, y + 1);
-        field[2] = new Point(x - 1, y);
-        field[3] = new Point(x + 1, y);
-        field[4] = new Point(x - 1, y + 1);
-        field[5] = new Point(x + 1, y + 1);
-        field[6] = new Point(x - 1, y - 1);
-        field[7] = new Point(x + 1, y - 1);
-        return field;
+    private Point[] getFieldAround(int x, int y) {
+        Point[] cell = new Point[8];
+        cell[0] = new Point(x, y - 1);
+        cell[1] = new Point(x, y + 1);
+        cell[2] = new Point(x - 1, y);
+        cell[3] = new Point(x + 1, y);
+        cell[4] = new Point(x - 1, y + 1);
+        cell[5] = new Point(x + 1, y + 1);
+        cell[6] = new Point(x - 1, y - 1);
+        cell[7] = new Point(x + 1, y - 1);
+        return cell;
     }
 
-    public void createNumberField() {
+    private void createNumberField() {
         for (int rowIndex = 0; rowIndex < fieldLength; rowIndex++) {
             for (int columnIndex = 0; columnIndex < fieldWidth; columnIndex++) {
                 int num = 0;
                 if (!field[rowIndex][columnIndex].getContent().equals("*")) {
-                    Point[] fields = this.getFieldAround(rowIndex, columnIndex);
+                    Point[] cells = this.getFieldAround(rowIndex, columnIndex);
                     for (int indexFields = 0; indexFields < 8; indexFields++) {
-                        Point point = fields[indexFields];
+                        Point point = cells[indexFields];
                         if (point.x >= 0 && point.x < fieldLength && point.y >= 0 && point.y < fieldWidth) {
                             if (field[point.x][point.y].getContent().equals("*")) {
                                 num++;
@@ -102,7 +105,7 @@ public class Model {
                     }
                 }
                 if (num > 0) {
-                    field[rowIndex][columnIndex].setFieldContent(String.valueOf(num));
+                    field[rowIndex][columnIndex].setCellContent(String.valueOf(num));
                 }
             }
         }
@@ -113,11 +116,11 @@ public class Model {
             field[row][col].changeFlag();
             if (field[row][col].isFlag()) {
                 numberOfFlag++;
-                fieldListener.changeField(row, col, FieldContent.MARKED);
+                fieldListener.changeCell(row, col, CellContent.MARKED);
                 fieldListener.changeMineCount(numberOfMine - numberOfFlag);
             } else {
                 numberOfFlag--;
-                fieldListener.changeField(row, col, FieldContent.CLOSED);
+                fieldListener.changeCell(row, col, CellContent.CLOSED);
                 fieldListener.changeMineCount(numberOfMine - numberOfFlag);
             }
         }
@@ -141,7 +144,7 @@ public class Model {
             return false;
         }
         field[row][col].setOpen(true);
-        fieldListener.changeField(row, col, field[row][col].getFieldContent());
+        fieldListener.changeCell(row, col, field[row][col].getCellContent());
         switch (field[row][col].getContent()) {
             case "*" -> {
                 secondMeter.stopSecondMeter();
@@ -174,9 +177,9 @@ public class Model {
             return;
         }
         int countMine = 0;
-        Point[] fields = this.getFieldAround(row, col);
+        Point[] cell = this.getFieldAround(row, col);
         for (int indexFields = 0; indexFields < 8; indexFields++) {
-            Point point = fields[indexFields];
+            Point point = cell[indexFields];
             if (point.x >= 0 && point.x < fieldLength && point.y >= 0 && point.y < fieldWidth) {
                 if (field[point.x][point.y].isFlag()) {
                     countMine++;
@@ -185,7 +188,7 @@ public class Model {
         }
         if (Integer.parseInt(field[row][col].getContent()) == countMine) {
             for (int indexFields = 0; indexFields < 8; indexFields++) {
-                Point point = fields[indexFields];
+                Point point = cell[indexFields];
                 if (point.x >= 0 && point.x < fieldLength && point.y >= 0 && point.y < fieldWidth) {
                     if (!field[point.x][point.y].isOpen()) {
                         if (stepMineIsEnd(point.x, point.y)) {
@@ -197,7 +200,7 @@ public class Model {
         }
     }
 
-    public boolean maybeYouWin() {
+    private boolean maybeYouWin() {
         for (int row = 0; row < fieldLength; row++) {
             for (int col = 0; col < field[row].length; col++) {
                 if (!field[row][col].isOpen() && !field[row][col].getContent().equals("*")) {
@@ -222,7 +225,7 @@ public class Model {
         this.loseGameListener = loseGameListener;
     }
 
-    public void setSecondMeter(ChangeSecondMeterListener secondMeter) {
+    public void setSecondMeter(SecondMeterInterface secondMeter) {
         this.secondMeter = secondMeter;
     }
 }

@@ -1,33 +1,33 @@
-package ru.cft.shift.task3.model;
+package ru.cft.shift.task3.model.secondmeter;
 
 import ru.cft.shift.task3.dto.GameType;
 
-public class SecondMeter implements ChangeSecondMeterListener {
-    MyThread myThread = new MyThread();
+public class SecondMeter implements SecondMeterInterface {
+    SecondsCycle secondsCycle = new SecondsCycle();
     SecondListener secondListener;
     HighScore highScore = new HighScore();
 
     @Override
     public void newStartSecondMeter() {
-        myThread = new MyThread(secondListener);
-        myThread.start();
+        secondsCycle = new SecondsCycle(secondListener);
+        secondsCycle.start();
     }
 
     @Override
     public void stopSecondMeter() {
-        myThread.interrupt();
+        secondsCycle.interrupt();
     }
 
     @Override
     public void stopWithResultSecondMeter(GameType gameType) {
-        myThread.interrupt();
-        highScore.setNewHighScore(gameType, myThread.getSecondTime() - 1);
+        secondsCycle.interrupt();
+        highScore.setNewHighScore(gameType, secondsCycle.getSecondTime() - 1);
     }
 
 
     public void setSecondListener(SecondListener secondListener) {
         this.secondListener = secondListener;
-        myThread = new MyThread(secondListener);
+        secondsCycle = new SecondsCycle(secondListener);
     }
 
     public void setHighScoreListener(HighScoreListener highScoreListener) {

@@ -1,10 +1,8 @@
 package ru.cft.shift.task3.model;
 
-public enum FieldContent {
-    CLOSED("X"),
+public enum CellContent {
     EMPTY(" "),
     BOMB("*"),
-    MARKED("F"),
     NUM_1("1"),
     NUM_2("2"),
     NUM_3("3"),
@@ -12,12 +10,17 @@ public enum FieldContent {
     NUM_5("5"),
     NUM_6("6"),
     NUM_7("7"),
-    NUM_8("8");
+    NUM_8("8"),
+    CLOSED,
+    MARKED;
 
-    private final String content;
+    private String content;
 
-    FieldContent(String content) {
+    CellContent(String content) {
         this.content = content;
+    }
+
+    CellContent() {
     }
 
     public String getContent() {

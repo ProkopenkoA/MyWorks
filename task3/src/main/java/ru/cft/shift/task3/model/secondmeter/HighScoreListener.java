@@ -1,4 +1,4 @@
-package ru.cft.shift.task3.model;
+package ru.cft.shift.task3.model.secondmeter;
 
 public interface HighScoreListener {
     void setNoviceRecord(String winnerName, int timeValue);

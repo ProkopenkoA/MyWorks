@@ -1,10 +1,11 @@
 package ru.cft.shift.task3.app;
 
 
-import ru.cft.shift.task3.controller.Controller;
+import ru.cft.shift.task3.controller.ModelController;
+import ru.cft.shift.task3.controller.SecondMeterController;
 import ru.cft.shift.task3.dto.GameType;
 import ru.cft.shift.task3.model.Model;
-import ru.cft.shift.task3.model.SecondMeter;
+import ru.cft.shift.task3.model.secondmeter.SecondMeter;
 import ru.cft.shift.task3.view.*;
 
 public class Application {
@@ -12,43 +13,42 @@ public class Application {
     public static void main(String[] args) {
         Model model = new Model();
         SecondMeter secondMeter = new SecondMeter();
-        Controller controller = new Controller(model, secondMeter);
+
+        ModelController modelController = new ModelController(model);
+        SecondMeterController secondMeterController = new SecondMeterController(secondMeter);
+
         MainWindow mainWindow = new MainWindow();
-        SettingsWindow settingsWindow = new SettingsWindow(mainWindow);
-        HighScoresWindow highScoresWindow = new HighScoresWindow(mainWindow);
-        RecordsWindow recordsWindow = new RecordsWindow(mainWindow);
-        LoseWindow loseWindow = new LoseWindow(mainWindow);
-        WinWindow winWindow = new WinWindow(mainWindow);
+        UnderWindow underWindow = new UnderWindow(mainWindow);
 
         model.setSecondMeter(secondMeter);
         model.setFieldListener(mainWindow);
-        model.setLoseGameListener(loseWindow);
-        model.setWinGameListener(winWindow);
+        model.setLoseGameListener(underWindow.getLoseWindow());
+        model.setWinGameListener(underWindow.getWinWindow());
         secondMeter.setSecondListener(mainWindow);
-        secondMeter.setHighScoreListener(highScoresWindow);
-        secondMeter.setHighScoreNameListener(recordsWindow);
-        settingsWindow.setGameTypeListener(controller);
-        recordsWindow.setNameListener(controller);
+        secondMeter.setHighScoreListener(underWindow.getHighScoresWindow());
+        secondMeter.setHighScoreNameListener(underWindow.getRecordsWindow());
+        underWindow.getSettingsWindow().setGameTypeListener(modelController);
+        underWindow.getRecordsWindow().setNameListener(secondMeterController);
 
 
-        mainWindow.setNewGameMenuAction(e -> controller.newGame());
-        loseWindow.setNewGameListener(e -> controller.newGame());
-        winWindow.setNewGameListener(e -> controller.newGame());
-        mainWindow.setSettingsMenuAction(e -> settingsWindow.setVisible(true));
-        mainWindow.setHighScoresMenuAction(e -> highScoresWindow.setVisible(true));
+        mainWindow.setNewGameMenuAction(e -> modelController.newGame());
+        underWindow.getLoseWindow().setNewGameListener(e -> modelController.newGame());
+        underWindow.getWinWindow().setNewGameListener(e -> modelController.newGame());
+        mainWindow.setSettingsMenuAction(e -> underWindow.getSettingsWindow().setVisible(true));
+        mainWindow.setHighScoresMenuAction(e -> underWindow.getHighScoresWindow().setVisible(true));
         mainWindow.setExitMenuAction(e -> {
             mainWindow.dispose();
-            secondMeter.stopSecondMeter();
+            secondMeterController.stop();
         });
-        loseWindow.setExitListener(e -> {
+        underWindow.getLoseWindow().setExitListener(e -> {
             mainWindow.dispose();
-            secondMeter.stopSecondMeter();
+            secondMeterController.stop();
         });
-        winWindow.setExitListener(e -> {
+        underWindow.getWinWindow().setExitListener(e -> {
             mainWindow.dispose();
-            secondMeter.stopSecondMeter();
+            secondMeterController.stop();
         });
-        mainWindow.setCellListener(controller::onMouseClick);
+        mainWindow.setCellListener(modelController::onMouseClick);
 
         mainWindow.setVisible(true);
         model.createNewField(GameType.NOVICE);

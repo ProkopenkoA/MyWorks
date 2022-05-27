@@ -1,4 +1,4 @@
-package ru.cft.shift.task3.model;
+package ru.cft.shift.task3.model.secondmeter;
 
 import ru.cft.shift.task3.dto.GameType;
 

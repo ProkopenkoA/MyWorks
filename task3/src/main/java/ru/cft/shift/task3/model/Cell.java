@@ -2,21 +2,21 @@ package ru.cft.shift.task3.model;
 
 import java.util.stream.Stream;
 
-public class Field {
-    private FieldContent fieldContent;
+public class Cell {
+    private CellContent cellContent;
     private boolean open = false;
     private boolean flag = false;
 
     public String getContent() {
-        return fieldContent.getContent();
+        return cellContent.getContent();
     }
 
-    public FieldContent getFieldContent() {
-        return fieldContent;
+    public CellContent getCellContent() {
+        return cellContent;
     }
 
-    public void setFieldContent(String fieldContent) {
-        this.fieldContent = Stream.of(FieldContent.values()).filter(v -> v.getContent().equals(fieldContent)).findAny().get();
+    public void setCellContent(String cellContent) {
+        this.cellContent = Stream.of(CellContent.values()).filter(v -> v.getContent().equals(cellContent)).findAny().get();
     }
 
     public boolean isOpen() {

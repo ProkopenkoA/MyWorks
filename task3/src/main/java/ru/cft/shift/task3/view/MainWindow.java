@@ -1,9 +1,9 @@
 package ru.cft.shift.task3.view;
 
 import ru.cft.shift.task3.dto.ButtonType;
-import ru.cft.shift.task3.model.FieldContent;
+import ru.cft.shift.task3.model.CellContent;
 import ru.cft.shift.task3.model.FieldListener;
-import ru.cft.shift.task3.model.SecondListener;
+import ru.cft.shift.task3.model.secondmeter.SecondListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -192,8 +192,8 @@ public class MainWindow extends JFrame implements FieldListener, SecondListener 
     }
 
     @Override
-    public void changeField(int column, int row, FieldContent fieldContent) {
-        setCellImage(column, row, GameImage.valueOf(fieldContent.name()));
+    public void changeCell(int column, int row, CellContent cellContent) {
+        setCellImage(column, row, GameImage.valueOf(cellContent.name()));
     }
 
     @Override

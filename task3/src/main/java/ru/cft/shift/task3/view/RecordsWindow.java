@@ -1,6 +1,6 @@
 package ru.cft.shift.task3.view;
 
-import ru.cft.shift.task3.model.HighScoreNameListener;
+import ru.cft.shift.task3.model.secondmeter.HighScoreNameListener;
 
 import javax.swing.*;
 import java.awt.*;
