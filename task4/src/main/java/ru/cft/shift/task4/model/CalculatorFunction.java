@@ -15,17 +15,14 @@ public class CalculatorFunction {
 
     private Functions functions;
     private static double result = 0;
-    private int countOfFlow = 3;
+    private final int countOfFlow;
 
-    public CalculatorFunction() {
+    public CalculatorFunction(int countOfFlow) {
+        this.countOfFlow = countOfFlow;
     }
 
     public void setFunctions(Functions functions) {
         this.functions = functions;
-    }
-
-    public void setCountOfFlow(int countOfFlow) {
-        this.countOfFlow = countOfFlow;
     }
 
     public static void addToResult(double term) {

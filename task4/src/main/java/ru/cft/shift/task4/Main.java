@@ -12,7 +12,7 @@ public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
-        CalculatorFunction calculatorFunction = new CalculatorFunction();
+        CalculatorFunction calculatorFunction = new CalculatorFunction(Runtime.getRuntime().availableProcessors());
         Functions functions = new SumOneDivideNxNPlusOne();
         ConsoleReader consoleReader = new ConsoleReader();
 
@@ -22,7 +22,6 @@ public class Main {
         double result;
         upperBound = consoleReader.consoleReadNumber();
         try {
-            calculatorFunction.setCountOfFlow(Runtime.getRuntime().availableProcessors());
             result = calculatorFunction.calculateFunctionSum(1, upperBound);
             LOGGER.info("Результат функции класса - " + functions.getClass().getCanonicalName() + " - " + result);
         }catch (IllegalStateException e){
