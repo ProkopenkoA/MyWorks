@@ -1,20 +1,26 @@
 package ru.cft.shift.task6;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
 public class Server {
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
 
-    static final int PORT = 3443;
+    private int port = 3443;
     private ArrayList<ClientHandler> clients = new ArrayList<ClientHandler>();
 
-    public Server() {
+    public Server(int portServer) {
+        this.port = portServer;
         Socket clientSocket = null;
         ServerSocket serverSocket = null;
         try {
-            serverSocket = new ServerSocket(PORT);
+            serverSocket = new ServerSocket(this.port);
+            log.info("Сервер запущен!");
             while (true) {
                 clientSocket = serverSocket.accept();
                 ClientHandler client = new ClientHandler(clientSocket, this);
@@ -22,14 +28,14 @@ public class Server {
                 new Thread(client).start();
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            log.error("Ошибка сервера: " + ex);
         } finally {
             try {
                 assert clientSocket != null;
                 clientSocket.close();
                 serverSocket.close();
             } catch (IOException ex) {
-                ex.printStackTrace();
+                log.error("Ошибка сервера: " + ex);
             }
         }
     }

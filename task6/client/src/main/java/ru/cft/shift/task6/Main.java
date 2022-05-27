@@ -7,7 +7,7 @@ import ru.cft.shift.task6.view.ListClient;
 import ru.cft.shift.task6.view.MainWindow;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         Model model = new Model();
         Controller controller = new Controller(model);
         ConnectWindow connectWindow = new ConnectWindow();

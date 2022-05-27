@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<configuration>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>windows-1251</charset>
+            <pattern>%d{HH:mm:ss.SSS} %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="file" class="ch.qos.logback.core.FileAppender">
+        <file>log/task.log</file>
+        <encoder>
+            <charset>windows-1251</charset>
+            <pattern>%d{HH:mm:ss.SSS} %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="file"/>
+        <appender-ref ref="console" />
+    </root>
+
+    <logger name="ru.cft.shift.task5" level="DEBUG"/>
+</configuration>

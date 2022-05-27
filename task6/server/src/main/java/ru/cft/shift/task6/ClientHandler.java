@@ -1,5 +1,8 @@
 package ru.cft.shift.task6;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -8,6 +11,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ClientHandler implements Runnable {
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     private static List<String> clientsNames = new ArrayList<String>();
     private Server server;
@@ -70,7 +74,7 @@ public class ClientHandler implements Runnable {
                 Thread.sleep(100);
             }
         } catch (InterruptedException ex) {
-            ex.printStackTrace();
+            log.error("Ошибка: " + ex);
         } finally {
             this.closeClient();
         }

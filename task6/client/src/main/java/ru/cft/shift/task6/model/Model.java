@@ -1,15 +1,22 @@
 package ru.cft.shift.task6.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 import java.util.Scanner;
 
 public class Model {
+    private static final Logger log = LoggerFactory.getLogger(Model.class);
 
-    private static final int SERVER_PORT = 3443;
+
+    private static int serverPort = 3443;
     private static String serverHost = "localhost";
     private ClientListener clientListener;
     private ChatListener chatListener;
@@ -28,8 +35,16 @@ public class Model {
         if (!server.isEmpty()) {
             serverHost = server;
         }
+
+        Properties properties = new Properties();
+        try (FileInputStream fis = new FileInputStream(ClassLoader.getSystemResource("config.properties").getPath())) {
+            properties.load(fis);
+            serverPort = Integer.parseInt(properties.getProperty("serverPort"));
+        } catch (IOException | NumberFormatException e) {
+         log.error("Ошибка в конфигурационном файле: " + e);
+        }
         try {
-            clientSocket = new Socket(serverHost, SERVER_PORT);
+            clientSocket = new Socket(serverHost, serverPort);
             new Socket();
             inMessage = new Scanner(clientSocket.getInputStream());
             outMessage = new PrintWriter(clientSocket.getOutputStream());
@@ -40,7 +55,7 @@ public class Model {
             outMessage.flush();
         } catch (IOException e) {
             connectServerListener.errorWindow("Не удалось подключиться к серверу");
-            System.out.println("Ошибка подключения - " + e);
+            log.error("Ошибка подключения: " + e);
         }
     }
 
@@ -91,15 +106,13 @@ public class Model {
             inMessage.close();
             clientSocket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Ошибка сервер: " + e);
         }
     }
 
     public void sendToServer(String message) {
         Date dateNow = new Date();
         SimpleDateFormat formatForDateNow = new SimpleDateFormat("[MM.dd hh:mm:ss a] ");
-
-        System.out.println("Текущая дата " + formatForDateNow.format(dateNow));
         outMessage.println(formatForDateNow.format(dateNow) + clientName + ": " + message);
         outMessage.flush();
     }
