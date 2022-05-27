@@ -12,9 +12,9 @@ public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
-        CalculatorFunction calculatorFunction = new CalculatorFunction(Runtime.getRuntime().availableProcessors());
         Functions functions = new SumOneDivideNxNPlusOne();
         ConsoleReader consoleReader = new ConsoleReader();
+        CalculatorFunction calculatorFunction = new CalculatorFunction(Runtime.getRuntime().availableProcessors());
 
         calculatorFunction.setFunctions(functions);
 
