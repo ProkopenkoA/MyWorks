@@ -22,9 +22,9 @@ public class Main {
         double result;
         upperBound = consoleReader.consoleReadNumber();
         try {
+            calculatorFunction.setCountOfFlow(Runtime.getRuntime().availableProcessors());
             result = calculatorFunction.calculateFunctionSum(1, upperBound);
-            System.out.print("Результат функции класса - " + functions.getClass().getCanonicalName() + " - ");
-            System.out.println(result);
+            LOGGER.info("Результат функции класса - " + functions.getClass().getCanonicalName() + " - " + result);
         }catch (IllegalStateException e){
             LOGGER.error("task interrupt", e);
         }catch (Exception e){

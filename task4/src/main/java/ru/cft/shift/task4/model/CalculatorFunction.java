@@ -6,9 +6,9 @@ import ru.cft.shift.task4.functions.Functions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class CalculatorFunction {
     private static final Logger LOGGER = LoggerFactory.getLogger(CalculatorFunction.class);
@@ -33,8 +33,8 @@ public class CalculatorFunction {
     }
 
     public double calculateFunctionSum(long firstNumber, long upperBound) throws Exception {
-        ExecutorService executor = Executors.newWorkStealingPool();
-        List<Callable<Double>> callables = new ArrayList<>();
+        ExecutorService executor = Executors.newFixedThreadPool(countOfFlow);
+        List<Future<Double>> futures = new ArrayList<>();
         long[] bound = new long[countOfFlow + 1];
 
         bound[0] = firstNumber;
@@ -45,27 +45,16 @@ public class CalculatorFunction {
 
         for (int index = 0; index < countOfFlow; index++) {
             int finalIndex = index;
-            callables.add(index,
+            futures.add(index, executor.submit(
                     () -> {
                         LOGGER.info("Запуск потока - " + Thread.currentThread().getName());
                         return functions.partialSum(bound[finalIndex], bound[finalIndex + 1] - 1);
-                    });
+                    }));
         }
-
-        try {
-            executor.invokeAll(callables)
-                    .stream()
-                    .map(future -> {
-                        try {
-                            return future.get();
-                        } catch (Exception e) {
-                            throw new IllegalStateException(e);
-                        }
-                    })
-                    .forEach(CalculatorFunction::addToResult);
-        } catch (InterruptedException e) {
-            throw new IllegalStateException(e);
+        for (Future<Double> future : futures) {
+            addToResult(future.get());
         }
+        executor.shutdown();
         return result;
     }
 
