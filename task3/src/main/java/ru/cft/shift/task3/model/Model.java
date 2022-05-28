@@ -117,10 +117,12 @@ public class Model implements ModelInterface {
             if (field[row][col].isFlag()) {
                 numberOfFlag++;
                 fieldListener.changeCell(row, col, CellContent.MARKED);
+                if(numberOfMine - numberOfFlag < 0) return;
                 fieldListener.changeMineCount(numberOfMine - numberOfFlag);
             } else {
                 numberOfFlag--;
                 fieldListener.changeCell(row, col, CellContent.CLOSED);
+                if(numberOfMine - numberOfFlag < 0) return;
                 fieldListener.changeMineCount(numberOfMine - numberOfFlag);
             }
         }
