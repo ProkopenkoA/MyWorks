@@ -2,6 +2,9 @@ package ru.cft.shift.task6.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.cft.shift.task6.common.Message;
+import ru.cft.shift.task6.common.MessageType;
+import ru.cft.shift.task6.common.MsgConvert;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,12 +18,16 @@ import java.util.Scanner;
 public class Model {
     private static final Logger log = LoggerFactory.getLogger(Model.class);
 
-
     private static int serverPort = 3443;
     private static String serverHost = "localhost";
+
+    private final MsgConvert msgConvert = new MsgConvert();
+    private Message message;
+
     private ClientListener clientListener;
     private ChatListener chatListener;
     private ConnectServerListener connectServerListener;
+
     private Socket clientSocket;
     private Scanner inMessage;
     private PrintWriter outMessage;
@@ -43,6 +50,7 @@ public class Model {
         } catch (IOException | NumberFormatException e) {
          log.error("Ошибка в конфигурационном файле: " + e);
         }
+
         try {
             clientSocket = new Socket(serverHost, serverPort);
             new Socket();
@@ -51,9 +59,9 @@ public class Model {
             connectServerListener.openWindow(false);
             chatListener.openMainWindow(true);
             waitForMessage();
-            outMessage.println("##ADD##NEW##NAME##" + clientName);
+            outMessage.println(msgConvert.convertToString(MessageType.ADD, clientName));
             outMessage.flush();
-        } catch (IOException e) {
+        }catch (IOException e) {
             connectServerListener.errorWindow("Не удалось подключиться к серверу");
             log.error("Ошибка подключения: " + e);
         }
@@ -63,36 +71,22 @@ public class Model {
         new Thread(() -> {
             while (true) {
                 if (inMessage.hasNext()) {
-                    String inMes = inMessage.nextLine();
-
-                    if (inMes.length() > 21) {
-                        if (inMes.startsWith("Это имя уже занято - ")) {
+                    message = msgConvert.covertToMessage(inMessage.nextLine());
+                    switch (message.getMessageType()){
+                        case NOT_FIRST -> {
                             clientListener.deleteAllClient();
                             chatListener.openMainWindow(false);
                             closeServer();
                             connectServerListener.openWindow(true);
-                            connectServerListener.errorWindow(inMes);
-                            break;
+                            connectServerListener.errorWindow(message.getMsg());
                         }
-                    }
-
-                    if (inMes.length() > 20) {
-                        if (inMes.startsWith("##client##get##out##")) {
-                            int index = Integer.parseInt(inMes.substring(20));
+                        case ADD -> clientListener.addClient(message.getMsg());
+                        case DELETE -> {
+                            int index = Integer.parseInt(message.getMsg());
                             clientListener.deleteClient(index);
-                            continue;
                         }
+                        case CLIENT -> chatListener.printMsg(message.getMsg());
                     }
-
-                    if (inMes.length() > 18) {
-                        if (inMes.startsWith("##ADD##NEW##NAME##")) {
-                            inMes = inMes.substring(18);
-                            clientListener.addClient(inMes);
-                            continue;
-                        }
-                    }
-
-                    chatListener.printMsg(inMes);
                 }
             }
         }).start();
@@ -100,7 +94,7 @@ public class Model {
 
     public void closeServer() {
         try {
-            outMessage.println("##session##end##" + clientName);
+            outMessage.println(msgConvert.convertToString(MessageType.DELETE, clientName));
             outMessage.flush();
             outMessage.close();
             inMessage.close();
@@ -113,7 +107,8 @@ public class Model {
     public void sendToServer(String message) {
         Date dateNow = new Date();
         SimpleDateFormat formatForDateNow = new SimpleDateFormat("[MM.dd hh:mm:ss a] ");
-        outMessage.println(formatForDateNow.format(dateNow) + clientName + ": " + message);
+        String msg = formatForDateNow.format(dateNow) + clientName + ": " + message;
+        outMessage.println(msgConvert.convertToString(MessageType.CLIENT, msg));
         outMessage.flush();
     }
 

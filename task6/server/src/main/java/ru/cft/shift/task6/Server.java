@@ -2,6 +2,7 @@ package ru.cft.shift.task6;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.cft.shift.task6.common.MessageType;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -24,6 +25,7 @@ public class Server {
             while (true) {
                 clientSocket = serverSocket.accept();
                 ClientHandler client = new ClientHandler(clientSocket, this);
+                client.sendAllClients();
                 clients.add(client);
                 new Thread(client).start();
             }
@@ -31,18 +33,22 @@ public class Server {
             log.error("Ошибка сервера: " + ex);
         } finally {
             try {
-                assert clientSocket != null;
-                clientSocket.close();
-                serverSocket.close();
+
+                if (clientSocket != null) {
+                    clientSocket.close();
+                }
+                if (serverSocket != null) {
+                    serverSocket.close();
+                }
             } catch (IOException ex) {
                 log.error("Ошибка сервера: " + ex);
             }
         }
     }
 
-    public void sendMessageToAllClients(String msg) {
+    public void sendMessageToAllClients(MessageType messageType, String msg) {
         for (ClientHandler o : clients) {
-            o.sendMsg(msg);
+            o.sendMsg(messageType, msg);
         }
 
     }

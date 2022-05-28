@@ -4,28 +4,31 @@ import ru.cft.shift.task6.model.ChatListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 
 public class MainWindow extends JFrame implements ChatListener {
 
     private MessegeListener messegeListener;
     private CloseServerListener closeServerListener;
 
+    private JMenuItem newServer;
+    private JMenuItem exitMenu;
+
     private JTextField jtfMessage;
     private JTextArea jtaTextAreaMessage;
+    private JScrollPane jsp;
 
     public MainWindow() {
         setBounds(600, 300, 600, 500);
         setTitle("Client");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+        createSetting();
+
         jtaTextAreaMessage = new JTextArea();
         jtaTextAreaMessage.setEditable(false);
         jtaTextAreaMessage.setLineWrap(true);
-        JScrollPane jsp = new JScrollPane(jtaTextAreaMessage);
+        jsp = new JScrollPane(jtaTextAreaMessage);
 
         add(jsp, BorderLayout.CENTER);
 
@@ -35,6 +38,8 @@ public class MainWindow extends JFrame implements ChatListener {
         bottomPanel.add(jbSendMessage, BorderLayout.EAST);
         jtfMessage = new JTextField("Введите ваше сообщение: ");
         bottomPanel.add(jtfMessage, BorderLayout.CENTER);
+
+
 
         jbSendMessage.addActionListener(e -> {
             if (!jtfMessage.getText().trim().isEmpty()) {
@@ -59,7 +64,27 @@ public class MainWindow extends JFrame implements ChatListener {
         });
     }
 
-    public void setMessegeListener(MessegeListener listener) {
+    private void createSetting(){
+        JMenuBar menuBar = new JMenuBar();
+        JMenu gameMenu = new JMenu("Настройки");
+
+        gameMenu.add(newServer = new JMenuItem("Новый сервер"));
+        gameMenu.addSeparator();
+        gameMenu.add(exitMenu = new JMenuItem("Выход"));
+
+        menuBar.add(gameMenu);
+        setJMenuBar(menuBar);
+    }
+
+    public void setNewServer(ActionListener listener) {
+        newServer.addActionListener(listener);
+    }
+
+    public void setExitMenuAction(ActionListener listener) {
+        exitMenu.addActionListener(listener);
+    }
+
+    public void setMessageListener(MessegeListener listener) {
         this.messegeListener = listener;
     }
 
@@ -75,5 +100,7 @@ public class MainWindow extends JFrame implements ChatListener {
     @Override
     public void printMsg(String msg) {
         jtaTextAreaMessage.append(msg + "\n");
+        JScrollBar bar = jsp.getVerticalScrollBar();
+        bar.setValue(bar.getMaximum());
     }
 }

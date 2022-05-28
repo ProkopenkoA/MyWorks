@@ -2,6 +2,9 @@ package ru.cft.shift.task6;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.cft.shift.task6.common.Message;
+import ru.cft.shift.task6.common.MessageType;
+import ru.cft.shift.task6.common.MsgConvert;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,18 +14,22 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ClientHandler implements Runnable {
-    private static final Logger log = LoggerFactory.getLogger(Main.class);
+    private static final Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
     private static List<String> clientsNames = new ArrayList<String>();
+
+    private final MsgConvert msgConvert = new MsgConvert();
+    private Message message;
+    private boolean isEnd = true;
+
     private Server server;
     private PrintWriter outMessage;
     private Scanner inMessage;
-    private Socket clientSocket = null;
+
 
     public ClientHandler(Socket socket, Server server) {
         try {
             this.server = server;
-            this.clientSocket = socket;
             this.outMessage = new PrintWriter(socket.getOutputStream());
             this.inMessage = new Scanner(socket.getInputStream());
         } catch (IOException ex) {
@@ -33,43 +40,26 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            for (String name : clientsNames) {
-                sendMsg("##ADD##NEW##NAME##" + name);
-            }
-            String clientMessage;
-            while (true) {
+            while (isEnd) {
                 if (inMessage.hasNext()) {
-                    clientMessage = inMessage.nextLine();
-                    System.out.println(clientMessage);
-                    if (clientMessage.length() > 19) {
-                        if (clientMessage.startsWith("##ADD##NEW##NAME##")) {
-                            if (hasThisName(clientMessage.substring(18))) {
-                                sendMsg("Это имя уже занято - " + clientMessage.substring(18));
-                                break;
+                    message = msgConvert.covertToMessage(inMessage.nextLine());
+                    switch (message.getMessageType()) {
+                        case ADD -> {
+                            if (hasThisName(message.getMsg())) {
+                                sendMsg(MessageType.NOT_FIRST, message.getMsg());
+                                return;
                             }
-                            server.sendMessageToAllClients(clientMessage);
-                            clientMessage = clientMessage.substring(18);
-                            clientsNames.add(clientMessage);
-                            server.sendMessageToAllClients(clientMessage + ", Добро пожаловать в чат!");
-                            continue;
+                            server.sendMessageToAllClients(MessageType.ADD, message.getMsg());
+                            clientsNames.add(message.getMsg());
+                            server.sendMessageToAllClients(MessageType.CLIENT, message.getMsg() + ", Добро пожаловать в чат!");
                         }
-                    }
-                    if (clientMessage.length() > 17) {
-                        if (clientMessage.startsWith("##session##end##")) {
-                            clientMessage = clientMessage.substring(16);
-                            int index;
-                            for (index = 0; index < clientsNames.size(); index++) {
-                                if (clientMessage.equals(clientsNames.get(index))) {
-                                    clientsNames.remove(index);
-                                    break;
-                                }
-                            }
-                            server.sendMessageToAllClients("##client##get##out##" + index);
-                            server.sendMessageToAllClients("Участник - " + clientMessage + ": Вышел!");
-                            break;
+                        case DELETE -> {
+                            server.sendMessageToAllClients(MessageType.DELETE, String.valueOf(findNumClient(message.getMsg())));
+                            server.sendMessageToAllClients(MessageType.CLIENT, "Участник - " + message.getMsg() + ": Вышел!");
+                            isEnd = false;
                         }
+                        case CLIENT -> server.sendMessageToAllClients(MessageType.CLIENT, message.getMsg());
                     }
-                    server.sendMessageToAllClients(clientMessage);
                 }
                 Thread.sleep(100);
             }
@@ -80,13 +70,31 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public void sendMsg(String msg) {
+
+    public void sendMsg(MessageType messageType, String msg) {
         try {
-            outMessage.println(msg);
+            outMessage.println(msgConvert.convertToString(messageType, msg));
             outMessage.flush();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.error("ошибка при отправки: " + ex);
         }
+    }
+
+    public void sendAllClients() {
+        for (String name : clientsNames) {
+            sendMsg(MessageType.ADD, name);
+        }
+    }
+
+    private int findNumClient(String name) {
+        int index;
+        for (index = 0; index < clientsNames.size(); index++) {
+            if (name.equals(clientsNames.get(index))) {
+                clientsNames.remove(index);
+                return index;
+            }
+        }
+        return 0;
     }
 
     private boolean hasThisName(String clientName) {

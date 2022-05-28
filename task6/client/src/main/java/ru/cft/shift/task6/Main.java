@@ -8,6 +8,7 @@ import ru.cft.shift.task6.view.MainWindow;
 
 public class Main {
     public static void main(String[] args) {
+
         Model model = new Model();
         Controller controller = new Controller(model);
         ConnectWindow connectWindow = new ConnectWindow();
@@ -17,9 +18,19 @@ public class Main {
         model.setConnectServerListener(connectWindow);
         model.setChatListener(mainWindow);
         model.setClientListener(listClient);
-        mainWindow.setMessegeListener(controller::sendMsg);
+        mainWindow.setMessageListener(controller::sendMsg);
         mainWindow.setCloseServerListener(controller::closeServer);
         connectWindow.setNewServerListener(controller::connectToServer);
+
+        mainWindow.setNewServer(e ->{
+                mainWindow.dispose();
+                controller.closeServer();
+                Main.main(null);
+            });
+        mainWindow.setExitMenuAction(e -> {
+            mainWindow.dispose();
+            controller.closeServer();
+        });
 
         connectWindow.setVisible(true);
     }
