@@ -1,12 +1,12 @@
 package ru.cft.shift.task5.item;
 
 public class Item {
+    private static volatile int count = 0;
+
     private final int  number;
-    private static int count = 0;
 
     public Item() {
-        count++;
-        number = count;
+        number = count++;
     }
 
     public int getNumber() {
