@@ -2,9 +2,9 @@ package ru.cft.shift.task6;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.cft.shift.task6.common.Message;
-import ru.cft.shift.task6.common.MessageType;
-import ru.cft.shift.task6.common.MsgConvert;
+import common.Message;
+import common.MessageType;
+import common.MsgConvert;
 
 import java.io.IOException;
 import java.io.PrintWriter;

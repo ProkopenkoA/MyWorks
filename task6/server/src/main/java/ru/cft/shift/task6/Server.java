@@ -2,7 +2,7 @@ package ru.cft.shift.task6;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.cft.shift.task6.common.MessageType;
+import common.MessageType;
 
 import java.io.IOException;
 import java.net.ServerSocket;

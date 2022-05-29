@@ -1,4 +1,4 @@
-package ru.cft.shift.task6.common;
+package common;
 
 public enum MessageType {
     DELETE,
