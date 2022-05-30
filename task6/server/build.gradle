@@ -10,6 +10,8 @@ repositories {
 }
 
 dependencies {
+    implementation project(':task6:common')
+
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.2.3'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.2.3'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
